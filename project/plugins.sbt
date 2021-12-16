@@ -1,0 +1,7 @@
+addSbtPlugin("com.codecommit"            % "sbt-github-actions"     % "0.14.2")
+addSbtPlugin("org.scalameta"             % "sbt-scalafmt"           % "2.4.5")
+addSbtPlugin("ch.epfl.scala"             % "sbt-scalafix"           % "0.9.33")
+addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"           % "0.1.20")
+addSbtPlugin("org.jmotor.sbt"            % "sbt-dependency-updates" % "1.2.2")
+addSbtPlugin("org.scalameta"             % "sbt-native-image"       % "0.3.2")
+addSbtPlugin("org.scoverage"             % "sbt-scoverage"          % "2.0.0-M3")
