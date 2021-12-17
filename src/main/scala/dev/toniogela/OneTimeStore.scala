@@ -26,12 +26,9 @@ class OneTimeStore[F[_]: Async: Random: Parallel] private (
 object OneTimeStore {
 
   def empty[F[_]: Async: Parallel](timeout: FiniteDuration): F[OneTimeStore[F]] = for {
-    stateRef <- Ref.of(Map.empty[String, String])
-    random   <- Random.scalaUtilRandom
-  } yield {
-    implicit val rand = random
-    new OneTimeStore(stateRef, timeout)
-  }
+    stateRef                     <- Ref.of(Map.empty[String, String])
+    implicit0(random: Random[F]) <- Random.scalaUtilRandom
+  } yield new OneTimeStore(stateRef, timeout)
 
   private def randomKey[F[_]: Sync: Random: Parallel]: F[String] = List.fill(64)(Random[F].nextAlphaNumeric).parSequence
     .map(_.mkString)
