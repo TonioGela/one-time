@@ -12,14 +12,13 @@ class OneTimeRoutes[F[_]: Async: Http4sDsl] private (store: OneTimeStore[F])(uri
   def routes: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root        => Ok(OneTimeRoutes.homepage(uri), `Content-Type`(MediaType.text.html))
     case GET -> Root / key  => store.get(key).flatMap {
-        case Some(value) => Ok(value)
+        case Some(value) => Ok(value.trim)
         case None        => NotFound(s"No value or timeout expired")
       }
     case req @ POST -> Root => takeLimited(req.body, limit).map(bs => new String(bs.toArray).trim).attempt.flatMap {
         case Right(content) => store.save(content) >>= (key => Ok(s"$uri$key"))
         case Left(_)        => PayloadTooLarge(s"Max accepted payload size is $limit bytes")
       }
-
   }
 
   private def takeLimited(s: Stream[F, Byte], limit: Long) = s.pull.take(limit).flatMap {
@@ -64,6 +63,6 @@ object OneTimeRoutes {
 
   def apply[F[_]: Async](store: OneTimeStore[F])(uri: String, limit: Long): HttpRoutes[F] = {
     implicit val dsl = Http4sDsl[F]
-    EntityLimiter.httpRoutes(corsPolicy(new OneTimeRoutes[F](store)(uri, limit).routes), limit = limit)
+    corsPolicy(new OneTimeRoutes[F](store)(uri, limit).routes)
   }
 }

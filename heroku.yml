@@ -1,0 +1,5 @@
+build:
+  docker:
+    web: Dockerfile
+run:
+  web: ./one-time --baseUri "${BASE_URI}" --timeout "${TIMEOUT}" --port "${PORT}"
